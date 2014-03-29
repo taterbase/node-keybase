@@ -1,0 +1,33 @@
+{
+  "name": "node-keybase",
+  "version": "0.0.0",
+  "description": "Keybase.io library for node.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublish": "./node_modules/.bin/iced --compile ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/taterbase/node-keybase.git"
+  },
+  "keywords": [
+    "keybase",
+    "keybase.io",
+    "pgp",
+    "crypto"
+  ],
+  "author": "taterbase",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/taterbase/node-keybase/issues"
+  },
+  "homepage": "https://github.com/taterbase/node-keybase",
+  "devDependencies": {
+    "iced-coffee-script": "^1.7.1-b"
+  },
+  "dependencies": {
+    "triplesec": "^3.0.7",
+    "request": "^2.34.0"
+  }
+}
