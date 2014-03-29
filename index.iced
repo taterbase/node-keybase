@@ -4,13 +4,13 @@ triplesec = require 'triplesec'
 request   = require 'request'
 constants = require './constants.js'
 
-module.exports = {authorize}
-
-getsalt (usernameOrEmail, cb) ->
-  request.get {
+getsalt = (usernameOrEmail, cb) ->
+  await request.get {
     url: API + '/getsalt.json?email_or_username=' + usernameOrEmail
     json: true
-  }, cb
+  }, defer err, res, body
+
+  cb err, body
 
 authorize = (email_or_username, passphrase, cb) ->
 
@@ -46,3 +46,5 @@ authorize = (email_or_username, passphrase, cb) ->
       login_session: login_session
     json: true
   }, cb
+
+module.exports = {authorize}
