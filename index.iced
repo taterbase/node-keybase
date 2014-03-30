@@ -2,7 +2,7 @@ API       = 'https://keybase.io/_/api/1.0'
 crypto    = require 'crypto'
 triplesec = require 'triplesec'
 request   = require 'request'
-constants = require './constants.js'
+constants = require './constants'
 
 getsalt = (usernameOrEmail, cb) ->
   await request.get {
