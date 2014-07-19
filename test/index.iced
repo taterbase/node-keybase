@@ -52,3 +52,12 @@ describe 'node-keybase', ->
     result.completions.should.be.ok
 
     done()
+
+  it 'should grab the public key for a user', (done) ->
+    await keybase.public_key_for_username 'taterbase', defer err, result
+    return done err if err
+
+    result.should.be.ok
+    (typeof result).should.equal 'string'
+
+    done()

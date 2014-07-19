@@ -81,4 +81,11 @@ user_autocomplete = (string, cb) ->
 
   cb err, body
 
-module.exports = {authorize, getsalt, user_lookup, user_autocomplete}
+public_key_for_username = (username, cb) ->
+  await request.get {
+    url: "https://keybase.io/#{username}/key.asc"
+  }, defer err, res, body
+
+  cb err, body
+
+module.exports = {authorize, getsalt, user_lookup, user_autocomplete, public_key_for_username}
