@@ -1,0 +1,2 @@
+--require should
+--compilers iced:iced-coffee-script/register
