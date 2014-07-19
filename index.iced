@@ -5,6 +5,8 @@ request   = require 'request'
 constants = require './constants'
 
 getsalt = (usernameOrEmail, cb) ->
+  cb new Error "No username or email provided" if not usernameOrEmail
+
   await request.get {
     url: API + '/getsalt.json?email_or_username=' + usernameOrEmail
     json: true
@@ -38,13 +40,45 @@ authorize = (email_or_username, passphrase, cb) ->
                    .update(new Buffer(login_session, 'base64'))
                    .digest('hex')
 
-  request.post {
+  await request.post {
     url: API + '/login.json'
     body:
       email_or_username: email_or_username
       hmac_pwh: hmac_pwh
       login_session: login_session
     json: true
-  }, cb
+  }, defer err, res, body
 
-module.exports = {authorize}
+  cb err, body
+
+user_lookup = (options, cb) ->
+  queryString = ''
+
+  if options.usernames and not Array.isArray(options.usernames)
+    return cb new Error "Pass usernames in as an array of strings"
+  else if options.fields and not Array.isArray(options.fields)
+    return cb new Error "Pass fields in as an array of strings"
+
+  Object.keys(options).forEach (key) ->
+    queryString += if queryString.length == 0 then '?' else '&'
+    queryString += key + '='
+    option = options[key]
+
+    queryString += if Array.isArray(option) then option.join(',') else option
+
+  await request.get {
+    url: API + '/user/lookup.json' + queryString
+    json: true
+  }, defer err, res, body
+
+  cb err, body
+
+user_autocomplete = (string, cb) ->
+  await request.get {
+    url: API + '/user/autocomplete.json?q=' + string
+    json: true
+  }, defer err, res, body
+
+  cb err, body
+
+module.exports = {authorize, getsalt, user_lookup, user_autocomplete}

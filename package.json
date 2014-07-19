@@ -4,7 +4,7 @@
   "description": "Keybase.io library for node.js",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "./node_modules/.bin/mocha",
     "prepublish": "./node_modules/.bin/iced --compile ."
   },
   "repository": {
@@ -24,7 +24,9 @@
   },
   "homepage": "https://github.com/taterbase/node-keybase",
   "devDependencies": {
-    "iced-coffee-script": "^1.7.1-b"
+    "iced-coffee-script": "^1.7.1-b",
+    "mocha": "^1.20.1",
+    "should": "^4.0.4"
   },
   "dependencies": {
     "triplesec": "^3.0.7",
