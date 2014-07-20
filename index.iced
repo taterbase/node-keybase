@@ -4,19 +4,37 @@ triplesec = require 'triplesec'
 request   = require 'request'
 constants = require './constants'
 
-getsalt = (usernameOrEmail, cb) ->
-  cb new Error "No username or email provided" if not usernameOrEmail
+Keybase = (@usernameOrEmail, @passphrase)->
+
+Keybase.prototype.getsalt = (usernameOrEmail, cb) ->
+  if arguments.length isnt 2
+    cb = arguments[0]
+
+    if not @usernameOrEmail
+      return cb new Error "No username or email provided"
+
+  else
+    @usernameOrEmail = usernameOrEmail
 
   await request.get {
-    url: API + '/getsalt.json?email_or_username=' + usernameOrEmail
+    url: API + '/getsalt.json?email_or_username=' + @usernameOrEmail
     json: true
   }, defer err, res, body
 
   cb err, body
 
-authorize = (email_or_username, passphrase, cb) ->
+Keybase.prototype.authorize = (usernameOrEmail, passphrase, cb) ->
+  if arguments.length isnt 3
+    cb = arguments[0]
 
-  await getsalt email_or_username, defer err, result
+    if not @usernameOrEmail or not @passphrase
+      return cb new Error("You must pass in an email/username and passphrase")
+
+  else
+    @usernameOrEmail = usernameOrEmail
+    @passphrase = passphrase
+
+  await @getsalt defer err, result
 
   return cb err if err?
 
@@ -24,11 +42,10 @@ authorize = (email_or_username, passphrase, cb) ->
     return cb new Error("An error occured: " + JSON.stringify(result))
 
   salt          = new Buffer result.salt, 'hex'
-  csrf          = result.csrf_token
   login_session = result.login_session
 
   enc = new triplesec.Encryptor
-    key: new Buffer(passphrase, 'utf8'),
+    key: new Buffer(@passphrase, 'utf8'),
     version: 3
     
   extra_keymaterial = constants.pwh.derived_key_bytes + constants.openpgp.derived_key_bytes
@@ -43,15 +60,18 @@ authorize = (email_or_username, passphrase, cb) ->
   await request.post {
     url: API + '/login.json'
     body:
-      email_or_username: email_or_username
+      email_or_username: @usernameOrEmail
       hmac_pwh: hmac_pwh
       login_session: login_session
     json: true
   }, defer err, res, body
 
+  @session = body?.session
+  @csrf_token = body?.csrf_token
+
   cb err, body
 
-user_lookup = (options, cb) ->
+Keybase.prototype.user_lookup = (options, cb) ->
   queryString = ''
 
   if options.usernames and not Array.isArray(options.usernames)
@@ -73,7 +93,7 @@ user_lookup = (options, cb) ->
 
   cb err, body
 
-user_autocomplete = (string, cb) ->
+Keybase.prototype.user_autocomplete = (string, cb) ->
   await request.get {
     url: API + '/user/autocomplete.json?q=' + string
     json: true
@@ -81,11 +101,59 @@ user_autocomplete = (string, cb) ->
 
   cb err, body
 
-public_key_for_username = (username, cb) ->
+Keybase.prototype.public_key_for_username = (username, cb) ->
   await request.get {
     url: "https://keybase.io/#{username}/key.asc"
   }, defer err, res, body
 
   cb err, body
 
-module.exports = {authorize, getsalt, user_lookup, user_autocomplete, public_key_for_username}
+Keybase.prototype.key_add = (options, cb) ->
+  if not @session
+    console.log "Not logged in, attempting to authorize"
+
+    await @authorize defer err
+    if err
+      return cb new Error "Unable to authorize. Please login before adding a key"
+
+  options['session'] = options['session'] or @session
+  options['csrf_token'] = options['csrf_token'] or @csrf_token
+
+  await request.post {
+    url: "#{API}/key/add.json"
+    json: true
+    body: options
+  }, defer err, res, result
+
+  cb err, result
+
+Keybase.prototype.key_fetch = (options, cb) ->
+  cb new Error("Not impl'd")
+
+Keybase.prototype.key_revoke = (options, cb) ->
+  if arguments.length isnt 2
+    cb = arguments[0]
+    options = {}
+
+  if not @session
+    console.log "Not logged in, attempting to authorize"
+
+    await @authorize defer err
+    if err
+      return cb new Error "Unable to authorize. Please login before adding a key"
+
+  options['revocation_type'] = options['revocation_type'] or 0
+  options['csrf_token'] = options['csrf_token'] or @csrf_token
+  options['session'] = options['session'] or @session
+
+  if options['kid'] is undefined then options['revoke_primary'] = 1
+
+  await request.post {
+    url: "#{API}/key/revoke.json"
+    json: true
+    body: options
+  }, defer err, res, result
+
+  cb err, result
+
+module.exports = Keybase
