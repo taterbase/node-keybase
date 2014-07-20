@@ -41,8 +41,8 @@ describe 'node-keybase', ->
 
     done()
 
-  it 'should authorize passed in creds', (done) ->
-    await keybase.authorize USERNAME_OR_EMAIL, PASSPHRASE, defer err, result
+  it 'should login with passed in creds', (done) ->
+    await keybase.login USERNAME_OR_EMAIL, PASSPHRASE, defer err, result
     return done err if err
 
     result.guest_id.should.be.ok
@@ -53,8 +53,8 @@ describe 'node-keybase', ->
 
     done()
 
-  it 'should authorize with initialized in creds', (done) ->
-    await keybase.authorize defer err, result
+  it 'should login with initialized in creds', (done) ->
+    await keybase.login defer err, result
     return done err if err
 
     result.guest_id.should.be.ok

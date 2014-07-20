@@ -23,7 +23,7 @@ Keybase.prototype.getsalt = (usernameOrEmail, cb) ->
 
   cb err, body
 
-Keybase.prototype.authorize = (usernameOrEmail, passphrase, cb) ->
+Keybase.prototype.login = (usernameOrEmail, passphrase, cb) ->
   if arguments.length isnt 3
     cb = arguments[0]
 
