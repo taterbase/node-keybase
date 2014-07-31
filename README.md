@@ -8,10 +8,25 @@ Keybase.io api library for Node.js
 
 `node-keybase` is just a 1-for-1 mapping to the [Keybase API](https://keybase.io/docs/api/1.0)
 
-[initialization](#initialization)
-[signup](#signup)
+- [constructor](#constructor)
+- [signup](#signup)
+- [getsalt](#getsalt)
+- [login](#login)
+- [user/lookup](#userlookup)
+- [user/autocomplete](#userautocomplete)
+- [\<user\>/key.asc](#userkeyasc)
+- [key/add](#keyadd)
+- [key/fetch](#keyfetch)
+- [key/revoke](#keyrevoke)
+- [session/killall](#sessionkillall)
+- [sig/next\_seqno](#signextseqno)
+- [sig/post](#sigpost)
+- [sig/post\_auth](#sigpostauth)
+- [merkle/root](#merkleroot)
+- [merkle/block](#merkleblock)
 
-##initialization
+
+##constructor
 
 `node-keybase` can be initialized with a username/email and passphrase for authentication or it can be passed in later `login`.
 
