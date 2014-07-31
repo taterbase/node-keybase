@@ -17,6 +17,8 @@ describe 'node-keybase', ->
 
   @timeout 9000
 
+  it 'should allow a user to sign up'
+
   it 'should get salt with passed in creds', (done) ->
     await keybase.getsalt USERNAME_OR_EMAIL, defer err, result
     return done err if err
@@ -166,3 +168,11 @@ describe 'node-keybase', ->
     result.status.name.should.equal 'OK'
 
     done()
+
+  it 'should allow signature posting'
+
+  it 'should allow authentication via signing a message'
+
+  it 'return the current site-wide Merkle root hash'
+
+  it 'should, given a hash, lookup the block that hashes to it'

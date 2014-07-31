@@ -4,6 +4,8 @@ triplesec = require 'triplesec'
 request   = require 'request'
 constants = require './constants'
 
+noop = (func_name) -> -> arguments[arguments.length - 1] new Error "#{func_name} is not implemented"
+
 Keybase = (@usernameOrEmail, @passphrase)->
 
 Keybase.prototype._ensureLogin = (cb) ->
@@ -11,6 +13,8 @@ Keybase.prototype._ensureLogin = (cb) ->
 
   console.log "Not logged in, attempting to authorize"
   @login cb
+
+Keybase.prototype.signup = noop "signup"
 
 Keybase.prototype.getsalt = (usernameOrEmail, cb) ->
   if arguments.length isnt 2
@@ -206,5 +210,13 @@ Keybase.prototype.sig_next_seqno = (options, cb) ->
   }, defer err, res, result
 
   cb err, result
+
+Keybase.prototype.sig_post = noop "sig_post"
+
+Keybase.prototype.sig_post_auth = noop "sig_post_auth"
+
+Keybase.prototype.merkle_root = noop "merkle_root"
+
+Keybase.prototype.merkle_block = noop "merkle_block"
 
 module.exports = Keybase
