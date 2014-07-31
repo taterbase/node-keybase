@@ -15,7 +15,7 @@ add_public_key = (cb) ->
 
 describe 'node-keybase', ->
 
-  @timeout 3000
+  @timeout 9000
 
   it 'should get salt with passed in creds', (done) ->
     await keybase.getsalt USERNAME_OR_EMAIL, defer err, result
@@ -106,12 +106,20 @@ describe 'node-keybase', ->
   # TODO: We need a clean way to generate a p3skb to test this functionality
   it 'should allow you to add a private key'
 
-  it 'should allow you to fetch keys', (done) ->
-    keybase.key_fetch {}, done
+  it 'should allow you to fetch public keys', (done) ->
+    await keybase.key_fetch {pgp_key_ids: ['6052b2ad31a6631c', '980A3F0D01FE04DF'], ops: 1}, defer err, result
+    return done err if err
+
+    result.status.name.should.equal 'OK'
+    result.keys.should.be.ok
+    result.keys.length.should.equal 2
+
+    done()
+
+  # TODO: need to be able upload private keys first
+  it 'should allow you to fetch private keys'
 
   it 'should allow you to revoke the primary key', (done) ->
-    @timeout 5000
-
     await add_public_key defer err, result
     return done err if err
 
@@ -124,8 +132,6 @@ describe 'node-keybase', ->
     done()
 
   it 'should allow you to revoke a key by kid', (done) ->
-    @timeout 5000
-
     await add_public_key defer err, result
     return done err if err
 
@@ -136,5 +142,27 @@ describe 'node-keybase', ->
 
     result.status.name.should.equal 'OK'
     result.revocation_id.should.be.ok
+
+    done()
+
+  it 'should kill all sessions', (done) ->
+    await keybase.session_killall defer err, result
+    return done err if err
+
+    result.status.name.should.equal 'OK'
+
+    done()
+
+  it "should get the next sequence number in the user's signature chain", (done) ->
+    await keybase.key_revoke defer err, result
+    return done err if err
+
+    await add_public_key defer err, result
+    return done err if err
+
+    await keybase.sig_next_seqno defer err, result
+    return done err if err
+
+    result.status.name.should.equal 'OK'
 
     done()

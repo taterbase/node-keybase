@@ -6,6 +6,12 @@ constants = require './constants'
 
 Keybase = (@usernameOrEmail, @passphrase)->
 
+Keybase.prototype._ensureLogin = (cb) ->
+  return cb() unless not @session
+
+  console.log "Not logged in, attempting to authorize"
+  @login cb
+
 Keybase.prototype.getsalt = (usernameOrEmail, cb) ->
   if arguments.length isnt 2
     cb = arguments[0]
@@ -109,12 +115,6 @@ Keybase.prototype.public_key_for_username = (username, cb) ->
   cb err, body
 
 Keybase.prototype.key_add = (options, cb) ->
-  if not @session
-    console.log "Not logged in, attempting to authorize"
-
-    await @authorize defer err
-    if err
-      return cb new Error "Unable to authorize. Please login before adding a key"
 
   options['session'] = options['session'] or @session
   options['csrf_token'] = options['csrf_token'] or @csrf_token
@@ -128,19 +128,33 @@ Keybase.prototype.key_add = (options, cb) ->
   cb err, result
 
 Keybase.prototype.key_fetch = (options, cb) ->
-  cb new Error("Not impl'd")
+  queryString = ''
+
+  Object.keys(options).forEach (key) ->
+    option = options[key]
+
+    if queryString.length is 0
+      queryString += '?'
+    else
+      queryString += '&'
+
+    queryString += "#{key}="
+    queryString += if Array.isArray(option) then option.join(',') else option
+
+  await request.get {
+    url: API + "/key/fetch.json#{queryString}"
+    json: true
+  }, defer err, res, body
+
+  cb err, body
 
 Keybase.prototype.key_revoke = (options, cb) ->
   if arguments.length isnt 2
     cb = arguments[0]
     options = {}
 
-  if not @session
-    console.log "Not logged in, attempting to authorize"
-
-    await @authorize defer err
-    if err
-      return cb new Error "Unable to authorize. Please login before adding a key"
+  await @_ensureLogin defer err
+  return cb err if err
 
   options['revocation_type'] = options['revocation_type'] or 0
   options['csrf_token'] = options['csrf_token'] or @csrf_token
@@ -152,6 +166,43 @@ Keybase.prototype.key_revoke = (options, cb) ->
     url: "#{API}/key/revoke.json"
     json: true
     body: options
+  }, defer err, res, result
+
+  cb err, result
+
+Keybase.prototype.session_killall = (cb) ->
+  await @_ensureLogin defer err
+  return cb err if err
+
+  options =
+    csrf_token: @csrf_token
+    session: @session
+
+  # Unset current session
+  @session = undefined
+  @csrf_token = undefined
+
+  await request.post {
+    url: "#{API}/session/killall.json"
+    json: true
+    body: options
+  }, defer err, res, result
+
+  cb err, result
+
+Keybase.prototype.sig_next_seqno = (options, cb) ->
+  if arguments.length is 1
+    cb = arguments[0]
+    options = {}
+
+  await @_ensureLogin defer err
+  return cb err if err
+
+  queryString = "?session=#{options["session"] or @session}&csrf_token=#{options["csrf_token"] or @csrf_token}&type=PUBLIC"
+
+  await request.get {
+    url: "#{API}/sig/next_seqno.json#{queryString}"
+    json: true
   }, defer err, res, result
 
   cb err, result
