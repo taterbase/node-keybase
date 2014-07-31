@@ -37,9 +37,7 @@ Example Output
 `getsalt` can have the username/email passed in or use the username/email that was passed in during initialization.
 
 ```javascript
-keybase.getsalt(/* USERNAME_OR_EMAIL, */ function(err, result) {
-  // result is the salt returned by the api
-})
+keybase.getsalt(/* USERNAME_OR_EMAIL, */ function(err, result) {})
 ```
 
 Example Output
@@ -61,8 +59,7 @@ Example Output
 `login` can have the username/email and passphrase passed in or use the values passed in during initialization.
 
 ```javascript
-keybase.login(/* USERNAME_OR_EMAIL, PASSPHRASE, */ function(err, result) {
-})
+keybase.login(/* USERNAME_OR_EMAIL, PASSPHRASE, */ function(err, result) {})
 ```
 
 Example Output
