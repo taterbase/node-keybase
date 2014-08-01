@@ -38,7 +38,17 @@ var Keybase = require('node-keybase')
 ## signup
 [docs](https://keybase.io/docs/api/1.0/call/signup)
 
-*Not implemented*
+Signup through the api. (currently requires an invitation code)
+
+```javascript
+keybase.signup({
+  name: "Lol",
+  username: "lollerblades",
+  email: "lollerblades@lollerblades.com",
+  passphrase: "keep it secret keep it safe",
+  invitation_id: "342128cecb14dbe6af0fab0d"
+}, function(err, result) {})
+```
 
 Example Output
 ```javascript

@@ -17,7 +17,22 @@ describe 'node-keybase', ->
 
   @timeout 9000
 
-  it 'should allow a user to sign up'
+  it 'should allow a user to sign up', (done) ->
+    options =
+      name: "Lol"
+      username: "lollerblades"
+      email: "lollerblades@lollerblades.com"
+      passphrase: "keep it secret keep it safe"
+      invitation_id: "342128cecb14dbe6af0fab0d"
+
+    await keybase.signup options, defer err, result
+
+    result.status.code.should.equal 707
+    result.status.name.should.equal "BAD_INVITATION_CODE"
+    result.guest_id.should.be.ok
+    result.csrf_token.should.be.ok
+
+    done err
 
   it 'should get salt with passed in creds', (done) ->
     await keybase.getsalt USERNAME_OR_EMAIL, defer err, result

@@ -12,7 +12,27 @@ Keybase.prototype._ensureLogin = (cb) ->
   console.log "Not logged in, attempting to authorize"
   @login cb
 
-Keybase.prototype.signup = noop "signup"
+Keybase.prototype.signup = (options, cb) ->
+  body = options
+  passphrase = options.passphrase
+
+  await @getsalt body.email, defer err, {salt}
+  return cb err if err
+
+  await util.gen_pwh {passphrase, salt}, defer err, pwh, salt, pwh_version
+  return cb err if err
+
+  body.salt = salt.toString('hex')
+  body.pwh = pwh.toString('hex')
+  body.pwh_version = pwh_version
+
+  await request.post {
+    url: API + '/signup.json'
+    json: true
+    body
+  }, defer err, res, body
+
+  cb err, body
 
 Keybase.prototype.getsalt = (usernameOrEmail, cb) ->
   if arguments.length isnt 2
