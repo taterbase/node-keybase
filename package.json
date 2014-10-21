@@ -1,6 +1,6 @@
 {
   "name": "node-keybase",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Keybase.io library for node.js",
   "main": "index.js",
   "scripts": {
@@ -37,6 +37,7 @@
     "gpg-wrapper": "0.0.47",
     "iced-error": "0.0.9",
     "async-each": "^0.1.4",
-    "iced-runtime": "^1.0.2"
+    "iced-runtime": "^1.0.2",
+    "kbpgp": "^1.1.4"
   }
 }
