@@ -6,6 +6,7 @@ PRIVATE_KEY = process.env['KEYBASE_PRIVATE_KEY'] or require './privatekey'
 
 Keybase = require '../'
 keybase = new Keybase USERNAME_OR_EMAIL, PASSPHRASE
+util = require '../util'
 
 add_public_key = (cb) ->
   keybase.key_add {
@@ -170,7 +171,10 @@ describe 'node-keybase', ->
 
     done()
 
-  it "should get the next sequence number in the user's signature chain", (done) ->
+  after (done) ->
+    # We have to make sure this test runs by itself to function correctly
+
+    # it "should get the next sequence number in the user's signature chain", (done) ->
     await keybase.key_revoke defer err, result
     return done err if err
 
@@ -191,3 +195,12 @@ describe 'node-keybase', ->
   it 'return the current site-wide Merkle root hash'
 
   it 'should, given a hash, lookup the block that hashes to it'
+
+describe 'keybase-utils', ->
+
+  it "should be able to generate a key"
+  #  username = 'lol'
+  #  passphrase = 'lolagain'
+
+  #  await util.gen_key {username, passphrase}, defer err
+  #  done err

@@ -1,4 +1,4 @@
-![](http://progressed.io/bar/60)
+![](http://progressed.io/bar/70)
 #node-keybase
 
 Keybase.io api library for Node.js
@@ -308,8 +308,6 @@ Example Output
 ```
 
 ## key/fetch
-**NOTICE:** Does not support fetching private keys yet
-
 [docs](https://keybase.io/docs/api/1.0/call/key/fetch)
 
 Fetch a public/private key. See docs for more info.
