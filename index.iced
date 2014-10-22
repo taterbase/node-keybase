@@ -1,7 +1,6 @@
 API       = 'https://keybase.io/_/api/1.0'
 request   = require 'request'
 util      = require './util'
-each      = require 'async-each'
 
 noop = (func_name) -> -> arguments[arguments.length - 1] new Error "#{func_name} is not implemented"
 
@@ -159,20 +158,7 @@ Keybase.prototype.key_fetch = (options, cb) ->
     url: API + "/key/fetch.json#{queryString}"
     json: true
   }, defer err, res, body
-  return cb err if err
-
-  if body.status.name is 'OK'
-    each body.keys, (key, done) =>
-      if key.secret > 0
-        await util.import_from_p3skb {raw: key.bundle, @passphrase}, defer err, key_data
-        key.bundle = key_data
-        done err, key
-      else
-        done null, key
-    , (err, results) ->
-      cb err, body
-  else
-    cb err, body
+  return cb err, body
 
 Keybase.prototype.key_revoke = (options, cb) ->
   if arguments.length isnt 2

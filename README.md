@@ -502,3 +502,7 @@ Example Output
   "type": 1
 }
 ```
+
+___
+
+Made with ⚡️ by [@taterbase](https://twitter.com/taterbase)

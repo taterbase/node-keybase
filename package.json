@@ -36,7 +36,6 @@
     "iced-spawn": "0.0.10",
     "gpg-wrapper": "0.0.47",
     "iced-error": "0.0.9",
-    "async-each": "^0.1.4",
     "iced-runtime": "^1.0.2",
     "kbpgp": "^1.1.4"
   }
