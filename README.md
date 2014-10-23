@@ -6,7 +6,7 @@ Keybase.io api library for Node.js
 
 #Usage
 
-`node-keybase` is just a 1-for-1 mapping to the [Keybase API](https://keybase.io/docs/api/1.0)
+`node-keybase` is just a wip 1-to-1 mapping to the [Keybase API](https://keybase.io/docs/api/1.0)
 
 - [constructor](#constructor)
 - [signup](#signup)
