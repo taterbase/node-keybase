@@ -3,6 +3,7 @@
 
 Keybase.io api library for Node.js
 
+[ISC License](https://github.com/taterbase/node-keybase/blob/master/LICENSE.md)
 
 #Usage
 
